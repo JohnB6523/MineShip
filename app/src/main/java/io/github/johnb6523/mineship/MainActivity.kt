@@ -18,20 +18,25 @@ class MainActivity : AppCompatActivity() {
         newGameButton.setOnClickListener {
             initGame()
         }
-        initGame()
     }
 
     private fun initGame() {
+        val state = GameState()
         val table = findViewById<TableLayout>(R.id.gridTable)
         for (i in 0..7) {
             val row = table.getChildAt(i) as TableRow
             for (j in 0..7) {
                 val tile = row.getChildAt(j) as ImageView
                 tile.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tile_unrevealed))
+//                revealTile(i,j,tile,state)
                 tile.setOnClickListener {
-                    tile.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tile_alpha))
+                    revealTile(i,j,tile,state)
                 }
             }
         }
+    }
+
+    private fun revealTile(i : Int, j : Int, tile : ImageView, state : GameState) {
+        tile.setImageDrawable(ContextCompat.getDrawable(this, state.gridContents[i][j].image))
     }
 }
