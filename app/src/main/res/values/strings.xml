@@ -2,4 +2,6 @@
     <string name="app_name">MineShip</string>
     <string name="new_game">New Game</string>
     <string name="rules">Rules</string>
+    <string name="win">You Win!</string>
+    <string name="lose">You Lose...</string>
 </resources>

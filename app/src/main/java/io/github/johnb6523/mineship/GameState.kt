@@ -14,8 +14,10 @@ enum class Tile(val image: Int) {
     NUM_7B(R.drawable.tile_7b), NUM_7R(R.drawable.tile_7r), NUM_8B(R.drawable.tile_8b), NUM_8R(R.drawable.tile_8r)
 }
 
+
 class GameState {
     val gridContents : List<List<Tile>> = initGrid()
+    var foundPieces : MutableList<Tile> = mutableListOf()
 
     private fun initGrid(): List<List<Tile>> {
         // Initialise grid
