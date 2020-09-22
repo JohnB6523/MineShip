@@ -5,9 +5,9 @@ import kotlin.math.min
 import kotlin.random.Random
 
 enum class Tile(val image: Int) {
-    SHIP_L1(R.drawable.tile_ship_placeholder), SHIP_L2(R.drawable.tile_ship_placeholder), SHIP_L3(R.drawable.tile_ship_placeholder), SHIP_L4(R.drawable.tile_ship_placeholder),
-    SHIP_M1(R.drawable.tile_ship_placeholder), SHIP_M2(R.drawable.tile_ship_placeholder), SHIP_M3(R.drawable.tile_ship_placeholder),
-    SHIP_S1(R.drawable.tile_ship_placeholder), SHIP_S2(R.drawable.tile_ship_placeholder), MINE(R.drawable.tile_mine), NUM_0(R.drawable.tile_0),
+    SHIP_L1(R.drawable.tile_ship_front), SHIP_L2(R.drawable.tile_ship_middle), SHIP_L3(R.drawable.tile_ship_middle), SHIP_L4(R.drawable.tile_ship_end),
+    SHIP_M1(R.drawable.tile_ship_front), SHIP_M2(R.drawable.tile_ship_middle), SHIP_M3(R.drawable.tile_ship_end),
+    SHIP_S1(R.drawable.tile_ship_front), SHIP_S2(R.drawable.tile_ship_end), MINE(R.drawable.tile_mine), NUM_0(R.drawable.tile_0),
     NUM_1B(R.drawable.tile_1b), NUM_1R(R.drawable.tile_1r), NUM_2B(R.drawable.tile_2b), NUM_2R(R.drawable.tile_2r),
     NUM_3B(R.drawable.tile_3b), NUM_3R(R.drawable.tile_3r), NUM_4B(R.drawable.tile_4b), NUM_4R(R.drawable.tile_4r),
     NUM_5B(R.drawable.tile_5b), NUM_5R(R.drawable.tile_5r), NUM_6B(R.drawable.tile_6b), NUM_6R(R.drawable.tile_6r),
@@ -18,6 +18,9 @@ enum class Tile(val image: Int) {
 class GameState {
     val gridContents : List<List<Tile>> = initGrid()
     var foundPieces : MutableList<Tile> = mutableListOf()
+    var ship2Ori : Int = 0
+    var ship3Ori : Int = 0
+    var ship4Ori : Int = 0
 
     private fun initGrid(): List<List<Tile>> {
         // Initialise grid
@@ -30,48 +33,54 @@ class GameState {
         // Add ships
         var numShips = 0
         while (numShips < 3) {
-            val row = Random.nextInt(0,7)
-            val col = Random.nextInt(0,7)
+            val row = Random.nextInt(0,8)
+            val col = Random.nextInt(0,8)
             if (rows[row][col] != Tile.NUM_0) continue
-            // Get direction (0 is up, 1 is right, 2 is down, 3 is left)
+            // Get orientation of ship (0 is up, 1 is right, 2 is down, 3 is left)
             when (numShips) {
-                0 -> when (Random.nextInt(0, 3)) {
-                    0 -> if (row - 1 >= 0 && rows[row - 1][col] == Tile.NUM_0) {
-                        rows[row][col] = Tile.SHIP_S1; rows[row - 1][col] = Tile.SHIP_S2; numShips++ }
-                    1 -> if (col + 1 <= 7 && rows[row][col + 1] == Tile.NUM_0) {
-                        rows[row][col] = Tile.SHIP_S1; rows[row][col + 1] = Tile.SHIP_S2; numShips++ }
-                    2 -> if (row + 1 <= 7 && rows[row + 1][col] == Tile.NUM_0) {
-                        rows[row][col] = Tile.SHIP_S1; rows[row + 1][col] = Tile.SHIP_S2; numShips++ }
-                    3 -> if (col - 1 >= 0 && rows[row][col - 1] == Tile.NUM_0) {
-                        rows[row][col] = Tile.SHIP_S1; rows[row][col - 1] = Tile.SHIP_S2; numShips++ }
+                0 -> { ship2Ori = Random.nextInt(0,4)
+                    when (ship2Ori) {
+                        0 -> if (row + 1 <= 7 && rows[row + 1][col] == Tile.NUM_0) {
+                            rows[row][col] = Tile.SHIP_S1; rows[row + 1][col] = Tile.SHIP_S2; numShips++ }
+                        1 -> if (col - 1 >= 0 && rows[row][col - 1] == Tile.NUM_0) {
+                            rows[row][col] = Tile.SHIP_S1; rows[row][col - 1] = Tile.SHIP_S2; numShips++ }
+                        2 -> if (row - 1 >= 0 && rows[row - 1][col] == Tile.NUM_0) {
+                            rows[row][col] = Tile.SHIP_S1; rows[row - 1][col] = Tile.SHIP_S2; numShips++ }
+                        3 -> if (col + 1 <= 7 && rows[row][col + 1] == Tile.NUM_0) {
+                            rows[row][col] = Tile.SHIP_S1; rows[row][col + 1] = Tile.SHIP_S2; numShips++ }
+                    }
                 }
-                1 -> when (Random.nextInt(0, 3)) {
-                    0 -> if (row - 2 >= 0 && rows[row - 1][col] == Tile.NUM_0 && rows[row - 2][col] == Tile.NUM_0) {
-                        rows[row][col] = Tile.SHIP_M1; rows[row - 1][col] = Tile.SHIP_M2; rows[row - 2][col] = Tile.SHIP_M3; numShips++ }
-                    1 -> if (col + 2 <= 7 && rows[row][col + 1] == Tile.NUM_0 && rows[row][col + 2] == Tile.NUM_0) {
-                        rows[row][col] = Tile.SHIP_M1; rows[row][col + 1] = Tile.SHIP_M2; rows[row][col + 2] = Tile.SHIP_M3; numShips++ }
-                    2 -> if (row + 2 <= 7 && rows[row + 1][col] == Tile.NUM_0 && rows[row + 2][col] == Tile.NUM_0) {
-                        rows[row][col] = Tile.SHIP_M1; rows[row + 1][col] = Tile.SHIP_M2; rows[row + 2][col] = Tile.SHIP_M3; numShips++ }
-                    3 -> if (col - 2 >= 0 && rows[row][col - 1] == Tile.NUM_0 && rows[row][col - 2] == Tile.NUM_0) {
-                        rows[row][col] = Tile.SHIP_M1; rows[row][col - 1] = Tile.SHIP_M2; rows[row][col - 2] = Tile.SHIP_M3; numShips++ }
+                1 -> { ship3Ori = Random.nextInt(0,4)
+                    when (ship3Ori) {
+                        0 -> if (row + 2 <= 7 && rows[row + 1][col] == Tile.NUM_0 && rows[row + 2][col] == Tile.NUM_0) {
+                            rows[row][col] = Tile.SHIP_M1; rows[row + 1][col] = Tile.SHIP_M2; rows[row + 2][col] = Tile.SHIP_M3; numShips++ }
+                        1 -> if (col - 2 >= 0 && rows[row][col - 1] == Tile.NUM_0 && rows[row][col - 2] == Tile.NUM_0) {
+                            rows[row][col] = Tile.SHIP_M1; rows[row][col - 1] = Tile.SHIP_M2; rows[row][col - 2] = Tile.SHIP_M3; numShips++ }
+                        2 -> if (row - 2 >= 0 && rows[row - 1][col] == Tile.NUM_0 && rows[row - 2][col] == Tile.NUM_0) {
+                            rows[row][col] = Tile.SHIP_M1; rows[row - 1][col] = Tile.SHIP_M2; rows[row - 2][col] = Tile.SHIP_M3; numShips++ }
+                        3 -> if (col + 2 <= 7 && rows[row][col + 1] == Tile.NUM_0 && rows[row][col + 2] == Tile.NUM_0) {
+                            rows[row][col] = Tile.SHIP_M1; rows[row][col + 1] = Tile.SHIP_M2; rows[row][col + 2] = Tile.SHIP_M3; numShips++ }
+                    }
                 }
-                2 -> when (Random.nextInt(0, 3)) {
-                    0 -> if (row - 3 >= 0 && rows[row - 1][col] == Tile.NUM_0 && rows[row - 2][col] == Tile.NUM_0 && rows[row - 3][col] == Tile.NUM_0) {
-                        rows[row][col] = Tile.SHIP_L1; rows[row - 1][col] = Tile.SHIP_L2; rows[row - 2][col] = Tile.SHIP_L3; rows[row - 3][col] = Tile.SHIP_L4; numShips++ }
-                    1 -> if (col + 3 <= 7 && rows[row][col + 1] == Tile.NUM_0 && rows[row][col + 2] == Tile.NUM_0 && rows[row][col + 3] == Tile.NUM_0) {
-                        rows[row][col] = Tile.SHIP_L1; rows[row][col + 1] = Tile.SHIP_L2; rows[row][col + 2] = Tile.SHIP_L3; rows[row][col + 3] = Tile.SHIP_L4; numShips++ }
-                    2 -> if (row + 3 <= 7 && rows[row + 1][col] == Tile.NUM_0 && rows[row + 2][col] == Tile.NUM_0 && rows[row + 3][col] == Tile.NUM_0) {
-                        rows[row][col] = Tile.SHIP_L1; rows[row + 1][col] = Tile.SHIP_L2; rows[row + 2][col] = Tile.SHIP_L3; rows[row + 3][col] = Tile.SHIP_L4; numShips++ }
-                    3 -> if (col - 3 >= 0 && rows[row][col - 1] == Tile.NUM_0 && rows[row][col - 2] == Tile.NUM_0 && rows[row][col - 3] == Tile.NUM_0) {
-                        rows[row][col] = Tile.SHIP_L1; rows[row][col - 1] = Tile.SHIP_L2; rows[row][col - 2] = Tile.SHIP_L3; rows[row][col - 3] = Tile.SHIP_L4; numShips++ }
+                2 -> { ship4Ori = Random.nextInt(0,4)
+                    when (ship4Ori) {
+                        0 -> if (row + 3 <= 7 && rows[row + 1][col] == Tile.NUM_0 && rows[row + 2][col] == Tile.NUM_0 && rows[row + 3][col] == Tile.NUM_0) {
+                            rows[row][col] = Tile.SHIP_L1; rows[row + 1][col] = Tile.SHIP_L2; rows[row + 2][col] = Tile.SHIP_L3; rows[row + 3][col] = Tile.SHIP_L4; numShips++ }
+                        1 -> if (col - 3 >= 0 && rows[row][col - 1] == Tile.NUM_0 && rows[row][col - 2] == Tile.NUM_0 && rows[row][col - 3] == Tile.NUM_0) {
+                            rows[row][col] = Tile.SHIP_L1; rows[row][col - 1] = Tile.SHIP_L2; rows[row][col - 2] = Tile.SHIP_L3; rows[row][col - 3] = Tile.SHIP_L4; numShips++ }
+                        2 -> if (row - 3 >= 0 && rows[row - 1][col] == Tile.NUM_0 && rows[row - 2][col] == Tile.NUM_0 && rows[row - 3][col] == Tile.NUM_0) {
+                            rows[row][col] = Tile.SHIP_L1; rows[row - 1][col] = Tile.SHIP_L2; rows[row - 2][col] = Tile.SHIP_L3; rows[row - 3][col] = Tile.SHIP_L4; numShips++ }
+                        3 -> if (col + 3 <= 7 && rows[row][col + 1] == Tile.NUM_0 && rows[row][col + 2] == Tile.NUM_0 && rows[row][col + 3] == Tile.NUM_0) {
+                            rows[row][col] = Tile.SHIP_L1; rows[row][col + 1] = Tile.SHIP_L2; rows[row][col + 2] = Tile.SHIP_L3; rows[row][col + 3] = Tile.SHIP_L4; numShips++ }
+                    }
                 }
             }
         }
         // Add mines
         var numMines = 0
         while (numMines < 10) {
-            val row = Random.nextInt(0,7)
-            val col = Random.nextInt(0,7)
+            val row = Random.nextInt(0,8)
+            val col = Random.nextInt(0,8)
             if (rows[row][col] == Tile.NUM_0) {
                 rows[row][col] = Tile.MINE
                 numMines++

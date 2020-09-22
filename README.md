@@ -8,4 +8,4 @@ For example, a red 3 means 3 of the surrounding 8 tiles are mines, but a blue 3 
 
 This was made as a small project to teach myself Kotlin/Android app development. 
 I had considered simply recreating either of the individual games, or others such as Chess, but decided this would be a little more interesting.
-Since the point of this project was primarily technical, I haven't put an extensive amount of time or thought into the game design, or the premise of the game.
+Since the point of this project was primarily technical, I haven't put an extensive amount of time or effort into the game balance, or the graphic design

@@ -1,6 +1,7 @@
 package io.github.johnb6523.mineship
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -32,9 +33,10 @@ class MainActivity : AppCompatActivity() {
             for (j in 0..7) {
                 val tile = row.getChildAt(j) as ImageView
                 tile.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tile_unrevealed))
-//                revealTile(i,j,tile,state)
+                tile.rotation = 0F
                 tile.setOnClickListener {
-                    revealTile(i,j,tile,state)
+                    showTile(i,j,tile,state)
+                    revealTile(i,j,state)
                 }
             }
         }
@@ -48,26 +50,36 @@ class MainActivity : AppCompatActivity() {
         text.setText(R.string.app_name)
     }
 
-    private fun revealTile(i : Int, j : Int, tile : ImageView, state : GameState) {
-        tile.setImageDrawable(ContextCompat.getDrawable(this, state.gridContents[i][j].image))
+    // revealTile handles gameplay logic of revealing a tapped tile
+    private fun revealTile(i : Int, j : Int, state : GameState) {
         when (state.gridContents[i][j]) {
-            Tile.MINE -> { endGame(state, false) }
-            in allPieces -> {state.foundPieces.add(state.gridContents[i][j]) }
+            Tile.MINE -> endGame(state, false)
+            in allPieces -> state.foundPieces.add(state.gridContents[i][j])
         }
         if (state.foundPieces.containsAll(smallPieces)) {
             val ship2icon = findViewById<ImageView>(R.id.ship2Icon)
-            ship2icon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.icon_ship_4))
+            ship2icon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.icon_ship_destroyed))
         }
         if (state.foundPieces.containsAll(medPieces)) {
             val ship3icon = findViewById<ImageView>(R.id.ship3Icon)
-            ship3icon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.icon_ship_2))
+            ship3icon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.icon_ship_destroyed))
         }
         if (state.foundPieces.containsAll(largePieces)) {
             val ship4icon = findViewById<ImageView>(R.id.ship4Icon)
-            ship4icon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.icon_ship_3))
+            ship4icon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.icon_ship_destroyed))
         }
         if (state.foundPieces.containsAll(allPieces)) {
             endGame(state, true)
+        }
+    }
+
+    // showTile handles graphics only, is used when tapped and on showing full board on win/loss
+    private fun showTile(i : Int, j : Int, tile : ImageView, state : GameState) {
+        tile.setImageDrawable(ContextCompat.getDrawable(this, state.gridContents[i][j].image))
+        when (state.gridContents[i][j]) {
+            in smallPieces -> tile.rotation = state.ship2Ori * 90F
+            in medPieces -> tile.rotation = state.ship3Ori * 90F
+            in largePieces -> tile.rotation = state.ship4Ori * 90F
         }
     }
 
@@ -77,7 +89,7 @@ class MainActivity : AppCompatActivity() {
             val row = table.getChildAt(i) as TableRow
             for (j in 0..7) {
                 val tile = row.getChildAt(j) as ImageView
-                tile.setImageDrawable(ContextCompat.getDrawable(this, state.gridContents[i][j].image))
+                showTile(i,j,tile,state)
                 tile.setOnClickListener(null)
             }
         }
