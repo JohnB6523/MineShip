@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/rulesPage">
+    <fragment
+        android:id="@+id/rulesPage"
+        android:name="io.github.johnb6523.mineship.RulesPage"
+        android:label="fragment_rules_page"
+        tools:layout="@layout/fragment_game_page" />
+</navigation>
