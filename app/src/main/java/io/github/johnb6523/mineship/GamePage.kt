@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.res.ResourcesCompat
 import androidx.navigation.findNavController
+import kotlin.math.max
+import kotlin.math.min
 
 val smallPieces = listOf(Tile.SHIP_S1, Tile.SHIP_S2)
 val medPieces = listOf(Tile.SHIP_M1, Tile.SHIP_M2, Tile.SHIP_M3)
@@ -48,8 +50,8 @@ class GamePage : Fragment() {
                 tile.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.tile_unrevealed, null))
                 tile.rotation = 0F
                 tile.setOnClickListener {
-                    showTile(i,j,tile,state)
-                    revealTile(view, i,j,state)
+                    showTile(view,i,j,state)
+                    revealTile(view,i,j,state,mutableListOf())
                 }
             }
         }
@@ -64,10 +66,24 @@ class GamePage : Fragment() {
     }
 
     // revealTile handles gameplay logic of revealing a tapped tile
-    private fun revealTile(view: View, i : Int, j : Int, state : GameState) {
+    // propagateList handles the propagation of reveals from a 0-tile, and avoids revealing an already revealed tile
+    private fun revealTile(view: View, i : Int, j : Int, state : GameState, propagateList: MutableList<Pair<Int, Int>>) {
+        val table = view.findViewById<TableLayout>(R.id.gridTable)
+        val row = table.getChildAt(i) as TableRow
+        val tile = row.getChildAt(j) as ImageView
         when (state.gridContents[i][j]) {
-            Tile.MINE -> endGame(view, state, false)
             in allPieces -> state.foundPieces.add(state.gridContents[i][j])
+            Tile.MINE -> endGame(view, state, false)
+            Tile.NUM_0 -> {
+                for (i2 in max(0, i-1)..min(7, i+1)) {
+                    for (j2 in max(0, j - 1)..min(7, j + 1)) {
+                        if ((i2 == i && j2 == j) || Pair(i2,j2) in propagateList) continue
+                        propagateList.add(Pair(i,j))
+                        showTile(view,i2,j2,state)
+                        revealTile(view,i2,j2,state,propagateList)
+                    }
+                }
+            }
         }
         if (state.foundPieces.containsAll(smallPieces)) {
             val ship2icon = view.findViewById<ImageView>(R.id.ship2Icon)
@@ -87,7 +103,10 @@ class GamePage : Fragment() {
     }
 
     // showTile handles graphics only, is used when tapped and on showing full board on win/loss
-    private fun showTile(i : Int, j : Int, tile : ImageView, state : GameState) {
+    private fun showTile(view : View, i : Int, j : Int, state : GameState) {
+        val table = view.findViewById<TableLayout>(R.id.gridTable)
+        val row = table.getChildAt(i) as TableRow
+        val tile = row.getChildAt(j) as ImageView
         tile.setImageDrawable(ResourcesCompat.getDrawable(resources, state.gridContents[i][j].image, null))
         when (state.gridContents[i][j]) {
             in smallPieces -> tile.rotation = state.ship2Ori * 90F
@@ -102,7 +121,7 @@ class GamePage : Fragment() {
             val row = table.getChildAt(i) as TableRow
             for (j in 0..7) {
                 val tile = row.getChildAt(j) as ImageView
-                showTile(i,j,tile,state)
+                showTile(view,i,j,state)
                 tile.setOnClickListener(null)
             }
         }
