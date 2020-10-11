@@ -4,6 +4,23 @@
     <string name="rules">Rules</string>
     <string name="win">You Win!</string>
     <string name="lose">You Lose...</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="back">Go Back</string>
+    <string name="rulesText1">
+        This game is a combination of Minesweeper and Battleship.
+        The goal is find all of the ships, without finding any mines.
+        There are three ships: one that is 2 tiles long, one 3 tiles long and one 4 tiles long.
+    </string>
+    <string name="rulesText2">
+        When you click a tile, what\'s underneath will be revealed. This could be a segment of a ship, a mine or a number.
+        When a number is revealed, this tells you how many of the 8 surrounding tiles contain either a ship segment, or a mine.
+        If a number is red, that means all the surrounding non-number tiles are mines.
+        If it is blue, at least one of the surrounding non-number tiles is a ship segment.
+        For example, a red 3 means there are 3 mines in the surrounding tiles.
+        A blue 3 could mean 2 mines and 1 ship segment, 1 mine and 2 ship segments, or 3 ship segments.
+    </string>
+    <string name="rulesText3">
+        If you manage to reveal all of the ship segments without revealing any mines, you win the game.
+        If you\'re unlucky and reveal even a single mine and you\'ll lose.
+        Whenever the game ends, win or lose, the rest of the board is revealed.
+    </string>
 </resources>

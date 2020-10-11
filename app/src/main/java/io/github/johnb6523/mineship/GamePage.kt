@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.res.ResourcesCompat
+import androidx.navigation.findNavController
 
 val smallPieces = listOf(Tile.SHIP_S1, Tile.SHIP_S2)
 val medPieces = listOf(Tile.SHIP_M1, Tile.SHIP_M2, Tile.SHIP_M3)
@@ -14,7 +15,7 @@ val largePieces = listOf(Tile.SHIP_L1, Tile.SHIP_L2, Tile.SHIP_L3, Tile.SHIP_L4)
 val allPieces = listOf(Tile.SHIP_S1, Tile.SHIP_S2, Tile.SHIP_M1, Tile.SHIP_M2, Tile.SHIP_M3,
     Tile.SHIP_L1, Tile.SHIP_L2, Tile.SHIP_L3, Tile.SHIP_L4)
 
-class RulesPage : Fragment() {
+class GamePage : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,6 +27,10 @@ class RulesPage : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val rulesButton = view.findViewById<Button>(R.id.rulesButton)
+        rulesButton.setOnClickListener{
+            view.findNavController().navigate(GamePageDirections.actionGamePageToRulesPage())
+        }
         val newGameButton = view.findViewById<Button>(R.id.newGameButton)
         newGameButton.setOnClickListener {
             initGame(view)
@@ -54,7 +59,7 @@ class RulesPage : Fragment() {
         ship3icon.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.icon_ship_3, null))
         val ship4icon = view.findViewById<ImageView>(R.id.ship4Icon)
         ship4icon.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.icon_ship_4, null))
-        val text = view.findViewById<TextView>(R.id.textView)
+        val text = view.findViewById<TextView>(R.id.titleText)
         text.setText(R.string.app_name)
     }
 
@@ -101,7 +106,7 @@ class RulesPage : Fragment() {
                 tile.setOnClickListener(null)
             }
         }
-        val text = view.findViewById<TextView>(R.id.textView)
+        val text = view.findViewById<TextView>(R.id.titleText)
         text.setText(if (win) R.string.win else R.string.lose)
     }
 }

@@ -3,10 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/rulesPage">
+    app:startDestination="@id/gamePage">
+    <fragment
+        android:id="@+id/gamePage"
+        android:name="io.github.johnb6523.mineship.GamePage"
+        android:label="fragment_game_page"
+        tools:layout="@layout/fragment_game_page">
+        <action
+            android:id="@+id/action_gamePage_to_rulesPage"
+            app:destination="@id/rulesPage" />
+    </fragment>
     <fragment
         android:id="@+id/rulesPage"
         android:name="io.github.johnb6523.mineship.RulesPage"
         android:label="fragment_rules_page"
-        tools:layout="@layout/fragment_game_page" />
+        tools:layout="@layout/fragment_rules_page" >
+        <action
+            android:id="@+id/action_rulesPage_to_gamePage"
+            app:destination="@id/gamePage"
+            app:popUpTo="@+id/gamePage"
+            app:popUpToInclusive="true"/>
+    </fragment>
 </navigation>
