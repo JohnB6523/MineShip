@@ -20,7 +20,7 @@
     </string>
     <string name="rulesText3">
         If you manage to reveal all of the ship segments without revealing any mines, you win the game.
-        If you\'re unlucky and reveal even a single mine and you\'ll lose.
+        If you\'re unlucky and reveal even a single mine, you\'ll lose.
         Whenever the game ends, win or lose, the rest of the board is revealed.
     </string>
 </resources>
